@@ -1,18 +1,34 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KornDog Records</title>
-  <link rel="icon" href="assets/korndog_logo.png"/>
-  <link rel="stylesheet" href="styles.css"/>
+
+  <!-- Favicon & styles -->
+  <link rel="icon" href="assets/korndog_logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Uploadcare key + widget (public key is safe to expose) -->
+  <script>
+    window.UPLOADCARE_PUBLIC_KEY = '19bfb5eceb...'; /* your key */
+  </script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" defer></script>
 </head>
 <body>
   <div id="app"></div>
+
+  <!-- Keep your small router guard so / loads correctly -->
   <script>
-    const routes = ['/', '/shop', '/collectibles', '/past', '/cart', '/about', '/admin'];
-    if (!routes.includes(location.hash.replace('#',''))) location.hash = '/shop';
+    const routes = ['/', '/shop', '/collectibles', '/cart', '/about', '/admin'];
+    if (!routes.includes(location.hash.replace('#', ''))) {
+      if (location.pathname === '/' && !location.hash) {
+        location.replace('/#/shop');
+      }
+    }
   </script>
-  <script src="app.js"></script>
+
+  <!-- Your app code -->
+  <script src="app.js" defer></script>
 </body>
 </html>
