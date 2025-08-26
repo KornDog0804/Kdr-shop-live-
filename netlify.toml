@@ -1,9 +1,2 @@
 [functions]
-  node_bundler = "esbuild"
-
-# Pretty URL to your function (optional but handy)
-[[redirects]]
-  from = "/publish"
-  to   = "/.netlify/functions/publish"
-  status = 200
-  
+directory = "netlify/functions"
