@@ -1,24 +1,33 @@
-# Netlify → UpCloud (S3-compatible) JSON Publisher
+# Korndog – Simple Git‑based Admin (Decap CMS)
 
-Drop-in starter to upload JSON into an S3-compatible bucket (UpCloud) from a Netlify Function.
+This adds a zero‑backend admin at `/admin` that edits two JSON files in your repo:
+- `content/hero.json`
+- `content/records.json`
 
-## What’s inside
-- `netlify/functions/publish.js` – uploads a JSON body to your bucket
-- `publish-admin/` – a simple page at `/publish-admin/` to test the function
-- `netlify.toml` – points Netlify at the functions directory
-- `package.json` – installs `@aws-sdk/client-s3`
+Uploaded images are committed to `static/uploads/`.
 
-## Required environment variables (Netlify → Site settings → Environment variables)
-- `S3_BUCKET` – e.g. `korndog-media`
-- `S3_ENDPOINT` – e.g. `https://jii3i.upcloudobjects.com`
-- `S3_REGION` – any string, e.g. `us-east-1`
-- `S3_FORCE_PATH_STYLE` – `true`
-- One of these credential pairs (any naming works):
-  - `S3_ACCESS_KEY_ID` + `S3_SECRET_ACCESS_KEY`
-  - `S3_KEY` + `S3_SECRET`
-  - `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`
-- (optional) `PUBLIC_ASSET_BASE_URL` – e.g. `https://jii3i.upcloudobjects.com/korndog-media` to get a public URL back
+## Quick install on Netlify
+1) Commit the `admin/`, `content/`, and `static/uploads/` folders to the root of your repo.  
+   (Optional: keep `index.html`, `app.js`, `styles.css` if you want the demo page.)
 
-## Test locally on your deployed site
-1. Push this folder to GitHub and deploy on Netlify.
-2. Visit `https://YOURDOMAIN/publish-admin/` and click the button. It should create `content/healthcheck.json` in your bucket.
+2) In Netlify:
+   - **Site settings → Identity → Enable Identity** (registration: *Invite only*).
+   - **Identity → Services → Enable Git Gateway**.
+   - **Identity → Users → Invite user** (your email). Accept the invite.
+
+3) Visit `/admin`, log in, and edit content. Saving creates a Git commit → Netlify redeploys.
+
+### Where images go
+- The CMS saves images to `static/uploads` and uses `/static/uploads/...` paths in JSON.
+- Your frontend should use those paths directly.
+
+### Demo page
+If you keep `index.html` + `app.js` + `styles.css`, the homepage will render the hero and inventory from the JSON files. You can also delete them and use your own site—just fetch:
+```
+/content/hero.json
+/content/records.json
+```
+
+## Notes
+- Backend is `git-gateway` so you don’t need any API keys.
+- Branch assumed: `main`. If your default branch is different, update `admin/config.yml`.

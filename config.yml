@@ -1,0 +1,42 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "static/uploads"
+public_folder: "/static/uploads"
+
+site_url: "/"
+logo_url: "/korndog_logo.png"
+
+collections:
+  - label: "Hero"
+    name: "hero"
+    format: "json"
+    files:
+      - label: "Homepage Hero"
+        name: "homepage_hero"
+        file: "content/hero.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+          - { label: "Hero Image", name: "image", widget: "image" }
+
+  - label: "Inventory"
+    name: "inventory"
+    format: "json"
+    files:
+      - label: "Records & Funkos"
+        name: "records"
+        file: "content/records.json"
+        fields:
+          - label: "Items"
+            name: "items"
+            widget: "list"
+            collapsed: true
+            label_singular: "Item"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Category", name: "category", widget: "select", options: ["Record", "Funko"] }
+              - { label: "Price", name: "price", widget: "number", value_type: "float", min: 0 }
+              - { label: "Image", name: "image", widget: "image" }
+              - { label: "Description", name: "description", widget: "text", required: false }

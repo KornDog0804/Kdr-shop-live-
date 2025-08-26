@@ -1,41 +1,25 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Publish Admin</title>
-    <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 24px; }
-      button { padding: 10px 14px; border-radius: 8px; border: 0; background: #0ea5e9; color: white; }
-      pre { background: #0b1020; color: #e6f1ff; padding: 16px; border-radius: 10px; overflow:auto; }
-      .hint { color:#555; margin-top:6px }
-    </style>
-  </head>
-  <body>
-    <h1>Publish Admin</h1>
-    <p>This page hits <code>/.netlify/functions/publish</code> and writes a JSON file into your UpCloud bucket.</p>
-    <button id="go">Send test JSON to UpCloud</button>
-    <div class="hint">Make sure your Netlify env vars are set before testing.</div>
-    <pre id="out">Click the button…</pre>
-    <script>
-      const out = document.getElementById('out');
-      document.getElementById('go').addEventListener('click', async () => {
-        out.textContent = 'Sending…';
-        try {
-          const res = await fetch('/.netlify/functions/publish', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-              key: 'content/healthcheck.json',
-              data: { ok: true, via: 'publish-admin', at: new Date().toISOString() }
-            })
-          });
-          const json = await res.json();
-          out.textContent = JSON.stringify(json, null, 2);
-        } catch (e) {
-          out.textContent = 'Failed: ' + (e.message || e);
-        }
-      });
-    </script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Korndog Records</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header id="hero" class="hero">
+    <div class="hero__inner">
+      <h1 id="hero-title"></h1>
+      <p id="hero-subtitle"></p>
+      <a class="btn" href="/admin">Open Admin</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Inventory</h2>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <script src="/app.js" type="module"></script>
+</body>
 </html>
