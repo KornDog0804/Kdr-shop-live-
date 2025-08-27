@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "headline": "Gateway to the Shop (Korndog Art Teal)",
+    "subhead": "Tap the teal to enter. Ozzy leads to Collectables.",
+    "image": "https://jii3i.upcloudobjects.com/korndog-media/korndog_logo.png",
+    "ctaText": "Enter Shop",
+    "ctaLink": "/"
+  },
+  "sections": [
+    {
+      "title": "Kitties",
+      "items": [
+        {
+          "title": "Zombie Kitty",
+          "price": 12,
+          "image": "https://jii3i.upcloudobjects.com/korndog-media/zombie_kitty.png",
+          "trackInventory": true,
+          "stock": 1
+        },
+        {
+          "title": "Chibi Kitty",
+          "price": 12,
+          "image": "https://jii3i.upcloudobjects.com/korndog-media/chibi_kitty.png",
+          "trackInventory": true,
+          "stock": 1
+        },
+        {
+          "title": "Bob Ross",
+          "price": 15,
+          "image": "https://jii3i.upcloudobjects.com/korndog-media/bob_ross.png",
+          "trackInventory": true,
+          "stock": 1
+        },
+        {
+          "title": "Korndog Art Teal",
+          "price": 0,
+          "image": "https://jii3i.upcloudobjects.com/korndog-media/korndog_logo.png",
+          "trackInventory": false,
+          "defaultQty": 1,
+          "maxQty": 1
+        }
+      ]
+    },
+    {
+      "title": "Funkos",
+      "items": [
+        {
+          "title": "Ozzy",
+          "price": 20,
+          "image": "https://jii3i.upcloudobjects.com/korndog-media/ozzy_box.png",
+          "trackInventory": false,
+          "defaultQty": 1,
+          "maxQty": 99
+        },
+        {
+          "title": "Random Records",
+          "price": 10,
+          "image": "https://jii3i.upcloudobjects.com/korndog-media/kitty_green.png",
+          "trackInventory": false,
+          "defaultQty": 2,
+          "maxQty": 99
+        },
+        {
+          "title": "Mystery Funkos",
+          "price": 10,
+          "image": "https://jii3i.upcloudobjects.com/korndog-media/kitty_purple.png",
+          "trackInventory": false,
+          "defaultQty": 2,
+          "maxQty": 99
+        }
+      ]
+    }
+  ]
+}

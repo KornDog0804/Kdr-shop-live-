@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>KDR • Collectables</title>
+<link rel="stylesheet" href="/styles.css"/>
+</head>
+<body class="collect-bg">
+  <div class="container">
+    <header>
+      <h1>Collectables (Funkos)</h1>
+      <div>
+        <a href="/" class="btn">Home</a>
+        <a href="/admin/" class="btn">Admin</a>
+        <button id="openCart" class="btn primary">Cart <span id="cartCount" class="badge">0</span></button>
+      </div>
+    </header>
+
+    <section id="hero" class="hero"></section>
+    <section class="section">
+      <h2>Funkos</h2>
+      <div id="grid-funkos" class="grid"></div>
+    </section>
+  </div>
+
+  <div id="imgModal" class="modal"><img id="modalImg" alt="preview" /></div>
+  <div id="kittyToast" class="kitty-toast"><img id="kittyPic" alt="kitty"/><div id="kittyBlurb"></div></div>
+  <aside id="cart" class="cart"><div class="cart-head"><strong>Your Cart</strong><button id="closeCart" class="btn">Close</button></div><div id="cartItems" class="cart-items"></div><div class="cart-foot"><div id="breakdown" class="muted" style="margin-bottom:6px"></div><div class="totals"><div>Total</div><div id="cartTotal">$0.00</div></div><div id="paypalContainer" style="margin-top:10px"></div><button id="clearCart" class="btn" style="width:100%;margin-top:8px">Clear cart</button></div></aside>
+
+  <script>window.KDR_PAGE="collectables";</script>
+  <script type="module" src="/cart.js"></script>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
