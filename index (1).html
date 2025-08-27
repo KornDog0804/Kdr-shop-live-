@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KDR Admin</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>KDR Admin</h1>
+        <div class="muted">Edit data then click <strong>Save to UpCloud</strong>.
+          The site reads <code>/content/live.json</code>.</div>
+      </div>
+      <div class="ctaRow">
+        <a class="btn" href="/">← Back to site</a>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+      <div style="flex:2 1 480px">
+        <div class="muted" style="margin:8px 0">Key:</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="key" value="content/live.json" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0b1020;color:#fff">
+          <button class="btn" id="save">Save to UpCloud</button>
+        </div>
+        <textarea id="json" class="textarea" spellcheck="false"></textarea>
+        <div id="result" class="muted" style="margin-top:8px">…</div>
+      </div>
+
+      <div style="flex:1 1 300px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <h2 style="margin:0 0 8px">Bucket Library</h2>
+          <button class="btn" id="refresh">Refresh</button>
+        </div>
+        <div id="gallery" class="gallery"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    const API = '/.netlify/functions';
+    const jsonEl = document.getElementById('json');
+    const resultEl = document.getElementById('result');
+    const keyEl = document.getElementById('key');
+    const gallery = document.getElementById('gallery');
+
+    async function load() {
+      const res = await fetch(\`\${API}/get-content?key=\${encodeURIComponent(keyEl.value)}\`, {cache:'no-store'});
+      const data = await res.json();
+      jsonEl.value = JSON.stringify(data, null, 2);
+    }
+    async function save() {
+      try{
+        const obj = JSON.parse(jsonEl.value);
+        resultEl.textContent = 'Saving…';
+        const res = await fetch(\`\${API}/publish\`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ key: keyEl.value, data: obj })
+        });
+        const js = await res.json();
+        if(!res.ok) throw new Error(js.error || 'Failed to save');
+        resultEl.innerHTML = 'Saved ✔ ' + (js.url ? ('<a href="'+js.url+'" target="_blank">'+js.url+'</a>') : '');
+      }catch(e){
+        resultEl.textContent = 'Error: ' + e.message;
+      }
+    }
+    async function refreshGallery(){
+      gallery.innerHTML = 'Loading…';
+      const res = await fetch(\`\${API}/list\`);
+      const js = await res.json();
+      gallery.innerHTML = '';
+      (js.objects||[]).forEach(url => {
+        const d = document.createElement('div'); d.className='thumb';
+        const img = document.createElement('img'); img.src=url; img.loading='lazy';
+        const sm = document.createElement('small'); sm.textContent = url.split('/').pop();
+        d.append(img, sm);
+        d.onclick=()=>{
+          // Insert or replace the hero image quickly
+          try{
+            const data = JSON.parse(jsonEl.value);
+            data.hero = data.hero || {};
+            data.hero.image = url;
+            jsonEl.value = JSON.stringify(data, null, 2);
+          }catch(_){}
+        };
+        gallery.append(d);
+      });
+    }
+
+    document.getElementById('save').onclick = save;
+    document.getElementById('refresh').onclick = refreshGallery;
+    load().then(refreshGallery);
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KDR — Shop</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>KDR <span class="badge">live</span></h1>
+        <div class="muted kicker">KornDog Records — kitties, records & Funkos</div>
+      </div>
+      <div class="ctaRow">
+        <a class="btn" href="/admin/">Open Admin</a>
+      </div>
+    </div>
+
+    <div id="hero" class="hero">
+      <img id="heroImg" src="" alt="Hero" />
+      <div class="heroText">
+        <h2 id="headline"></h2>
+        <div id="subhead" class="sub"></div>
+        <div class="ctaRow">
+          <a id="ctaLink" class="btn" href="#">Open Admin</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <button class="btn close" onclick="closeModal()">Close</button>
+    <img id="modalImg" alt="preview" />
+  </div>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
