@@ -1,19 +1,9 @@
-
 [build]
-  publish = "."
+  publish = "/"
   functions = "netlify/functions"
 
-[[redirects]]
-  from = "/admin"
-  to = "/admin/"
-  status = 301
+[build.environment]
+  NODE_VERSION = "20"
 
-[[redirects]]
-  from = "/about"
-  to = "/about/"
-  status = 301
-
-[[redirects]]
-  from = "/collectables"
-  to = "/collectables/"
-  status = 301
+[functions]
+  node_bundler = "esbuild"
