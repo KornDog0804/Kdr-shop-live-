@@ -1,134 +1,195 @@
+          /* cart.js  — KornDog Records
+   Cart logic + PayPal checkout (LIVE)
+   -------------------------------------------------- */
 
-const $ = (s)=>document.querySelector(s);
-const fmt = (n)=>'$'+n.toFixed(2);
+/* === PayPal config (EDIT IF NEEDED) ====================== */
+// Your live PayPal business email (Netlify env vars can't be read in the browser)
+const PAYPAL_BUSINESS =
+  (window.PAYPAL_BUSINESS && String(window.PAYPAL_BUSINESS)) ||
+  "tians.rule1215@gmail.com";       // <— your live PayPal email
 
-// Discount tiers
-const TIER10 = 120; // 10% at $120+
-const TIER15 = 200; // 15% at $200+
+const PAYPAL_MODE     = "live";     // 'live' | 'sandbox'
+const PAYPAL_CURRENCY = "USD";
+const PAYPAL_BASE =
+  PAYPAL_MODE === "live"
+    ? "https://www.paypal.com/cgi-bin/webscr"
+    : "https://www.sandbox.paypal.com/cgi-bin/webscr";
+/* ======================================================== */
 
-export const Cart = {
-  key: 'kdr.cart.v2',
-  items: [],
-  el: {
-    drawer: $('#cart'),
-    items: $('#cartItems'),
-    total: $('#cartTotal'),
-    count: $('#cartCount'),
-    breakdown: $('#breakdown'),
-    paypal: $('#paypalContainer'),
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const money = n => `$${Number(n || 0).toFixed(2)}`;
+const STORE_KEY = "kdr.cart.v2";
+
+/* ---------- Drawer UI (auto-injected if missing) ---------- */
+function ensureDrawer() {
+  if ($("#cartDrawer")) return;
+
+  const style = document.createElement("style");
+  style.textContent = `
+  .kdr-btn{all:unset;cursor:pointer;background:#2d2f3a;color:#dbe8ff;padding:.6rem .9rem;border-radius:.6rem}
+  .kdr-btn.primary{background:linear-gradient(135deg,#7c4dff,#00c2a8);color:#001018;font-weight:700}
+  .kdr-btn[disabled]{opacity:.5;cursor:not-allowed}
+  #openCart{position:fixed;top:14px;right:14px;background:#a88bff;color:#0b1020;padding:.45rem .7rem;border-radius:.6rem;font-weight:700}
+  #cartDrawer{position:fixed;inset:0 0 0 auto;width:min(94vw,420px);background:#0c1220;color:#d9e2ff;transform:translateX(100%);
+    transition:transform .28s ease;z-index:60;display:flex;flex-direction:column;box-shadow:-6px 0 24px rgba(0,0,0,.35)}
+  #cartDrawer.open{transform:translateX(0)}
+  #cartHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #1b2437}
+  #cartItems{flex:1;overflow:auto;padding:8px 10px}
+  .kdr-row{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:10px;border-bottom:1px dashed #1b2437}
+  .kdr-row img{width:56px;height:56px;object-fit:cover;border-radius:.5rem;border:1px solid #283047}
+  .kdr-qty{display:flex;gap:6px;align-items:center}
+  .kdr-qty button{width:26px;height:26px;border-radius:.5rem;background:#1a2132;color:#cfe2ff;border:none}
+  .kdr-qty input{width:36px;text-align:center;background:#0c1220;color:#fff;border:1px solid #1a243a;border-radius:.4rem;height:26px}
+  #cartFooter{padding:12px 14px;border-top:1px solid #1b2437}
+  #cartFooter .sum{display:flex;justify-content:space-between;margin:6px 0}
+  #cartFooter .actions{display:flex;gap:8px;margin-top:10px}
+  `;
+  document.head.appendChild(style);
+
+  const toggle = document.createElement("button");
+  toggle.id = "openCart";
+  toggle.className = "kdr-btn";
+  toggle.textContent = "Cart";
+  document.body.appendChild(toggle);
+
+  const drawer = document.createElement("aside");
+  drawer.id = "cartDrawer";
+  drawer.innerHTML = `
+    <div id="cartHeader">
+      <div style="font-weight:800">Your Cart</div>
+      <button id="closeCart" class="kdr-btn">Close</button>
+    </div>
+    <div id="cartItems"></div>
+    <div id="cartFooter">
+      <div class="sum"><span>Subtotal:</span><span id="cartSubtotal">$0.00</span></div>
+      <div class="sum"><span>Total:</span><span id="cartTotal">$0.00</span></div>
+      <div class="actions">
+        <button id="clearCart" class="kdr-btn">Clear cart</button>
+        <button id="checkoutBtn" class="kdr-btn primary">Checkout</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(drawer);
+
+  toggle.addEventListener("click", () => drawer.classList.add("open"));
+  $("#closeCart").addEventListener("click", () => drawer.classList.remove("open"));
+}
+
+/* ---------- Core cart state ---------- */
+const CartState = {
+  list: [],
+  load() {
+    try { this.list = JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); }
+    catch { this.list = []; }
   },
-  load(){
-    try { this.items = JSON.parse(localStorage.getItem(this.key)||'[]'); } catch { this.items = []; }
-    this.render();
+  save() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(this.list));
+    Cart.render();
   },
-  save(){ localStorage.setItem(this.key, JSON.stringify(this.items)); this.render(); },
-  add(item){
-    // Respect defaultQty / maxQty from item (if provided by JSON)
-    const defaultQty = Math.max(1, item.defaultQty || 1);
-    const maxQty = item.maxQty || 1;
-    const ix = this.items.findIndex(i=>i.id===item.id);
-    if(ix>-1){
-      this.items[ix].qty = Math.min(maxQty, this.items[ix].qty + 1);
-    } else {
-      const startQty = Math.min(maxQty, defaultQty);
-      this.items.push({ ...item, qty: startQty });
-    }
-    this.save();
-  },
-  remove(id){ this.items = this.items.filter(i=>i.id!==id); this.save(); },
-  qty(id, delta){
-    const it = this.items.find(i=>i.id===id); if(!it) return;
-    it.qty = Math.max(1, it.qty + delta);
-    this.save();
-  },
-  clear(){ this.items = []; this.save(); },
-  subtotal(){ return this.items.reduce((s,i)=>s + Number(i.price||0) * i.qty, 0); },
-  totals(){
-    const sub = this.subtotal();
-    const rate = sub >= TIER15 ? 0.15 : (sub >= TIER10 ? 0.10 : 0);
-    const disc = +(sub * rate).toFixed(2);
-    const total = +(sub - disc).toFixed(2);
-    return { sub, rate, disc, total };
-  },
-  render(){
-    // Items
-    this.el.items.innerHTML = this.items.map(i=>`
-      <div class="cart-item">
-        <img src="${i.image}" alt="${i.title}"/>
-        <div style="flex:1">
-          <div style="font-weight:800">${i.title}</div>
-          <div class="muted">${fmt(+i.price)} × ${i.qty}</div>
-          <div style="margin-top:6px;display:flex;gap:6px">
-            <button class="btn" onclick="Cart.qty('${i.id}',-1)">−</button>
-            <button class="btn" onclick="Cart.qty('${i.id}',+1)">+</button>
-            <button class="btn" style="margin-left:auto" onclick="Cart.remove('${i.id}')">Remove</button>
-          </div>
+  find(id) { return this.list.find(x => x.id === id); },
+  remove(id) { this.list = this.list.filter(x => x.id !== id); this.save(); },
+  clear() { this.list = []; this.save(); },
+  total() { return this.list.reduce((s, x) => s + x.price * (x.qty || 1), 0); }
+};
+CartState.load();
+
+/* ---------- PayPal URL ---------- */
+function buildPayPalUrl(items) {
+  const p = new URLSearchParams({
+    cmd: "_cart",
+    upload: "1",
+    currency_code: PAYPAL_CURRENCY,
+    business: PAYPAL_BUSINESS
+  });
+  items.forEach((it, i) => {
+    const n = i + 1;
+    p.set(`item_name_${n}`, it.title);
+    p.set(`amount_${n}`, Number(it.price).toFixed(2));
+    p.set(`quantity_${n}`, it.qty || 1);
+  });
+  return `${PAYPAL_BASE}?${p.toString()}`;
+}
+
+/* ---------- Rendering ---------- */
+function rowTemplate(it) {
+  return `
+    <div class="kdr-row" data-id="${it.id}">
+      <img src="${it.image || ""}" alt="">
+      <div>
+        <div style="font-weight:700">${it.title}</div>
+        <div class="kdr-qty" style="margin-top:6px">
+          <button data-act="dec">-</button>
+          <input data-act="qty" value="${it.qty || 1}" inputmode="numeric" />
+          <button data-act="inc">+</button>
+          <button data-act="rm" style="margin-left:10px" class="kdr-btn">remove</button>
         </div>
       </div>
-    `).join('');
-    // Counts
-    const c = this.items.reduce((n,i)=>n+i.qty,0);
-    this.el.count.textContent = c;
-    // Totals
-    const { sub, rate, disc, total } = this.totals();
-    this.el.total.textContent = fmt(total);
-    this.el.breakdown.textContent = `Subtotal: ${fmt(sub)}${ rate? ` • Discount (${Math.round(rate*100)}%): -${fmt(disc)}`:'' }`;
-    // Clear button
-    $('#clearCart')?.addEventListener('click', ()=> this.clear());
-    // PayPal
-    this.mountPayPal();
+      <div style="font-weight:700">${money(it.price * (it.qty || 1))}</div>
+    </div>
+  `;
+}
+
+/* ---------- Public API ---------- */
+export const Cart = {
+  /* Add item: { id, title, price, image, category, qty? } */
+  add(item) {
+    ensureDrawer();
+    const qty = Number(item.qty || 1);
+    const ex = CartState.find(item.id);
+    if (ex) ex.qty = (ex.qty || 1) + qty;
+    else CartState.list.push({ id: item.id, title: item.title, price: Number(item.price || 0), image: item.image, category: item.category, qty });
+    CartState.save();
   },
-  open(){ this.el.drawer.classList.add('open'); },
-  close(){ this.el.drawer.classList.remove('open'); },
-  async mountPayPal(){
-    this.el.paypal.innerHTML='';
-    if(this.items.length===0) return;
-    const cfg = await fetch('/.netlify/functions/paypal-config').then(r=>r.json()).catch(()=>({clientId:''}));
-    if(!cfg.clientId){
-      const warn = document.createElement('div'); warn.className='muted'; warn.textContent='Add PAYPAL_CLIENT_ID env var to enable checkout.';
-      this.el.paypal.appendChild(warn); return;
-    }
-    await new Promise((resolve,reject)=>{
-      if(window.paypal) return resolve();
-      const s = document.createElement('script');
-      s.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(cfg.clientId)}&currency=${cfg.currency||'USD'}`;
-      s.onload=resolve; s.onerror=reject; document.head.appendChild(s);
+  remove(id) { CartState.remove(id); },
+  clear() { CartState.clear(); },
+  items() { return [...CartState.list]; },
+  total() { return CartState.total(); },
+
+  render() {
+    ensureDrawer();
+    const items = CartState.list;
+    const box = $("#cartItems");
+    if (!box) return;
+
+    box.innerHTML = items.length
+      ? items.map(rowTemplate).join("")
+      : `<div style="padding:18px;color:#8aa0c8">Cart is empty.</div>`;
+
+    $("#cartSubtotal").textContent = money(CartState.total());
+    $("#cartTotal").textContent = money(CartState.total());
+
+    // row controls
+    $$(".kdr-row").forEach(row => {
+      const id = row.getAttribute("data-id");
+      row.addEventListener("click", e => {
+        const act = e.target?.getAttribute("data-act");
+        const it = CartState.find(id);
+        if (!it) return;
+
+        if (act === "inc") it.qty = (it.qty || 1) + 1;
+        if (act === "dec") it.qty = Math.max(1, (it.qty || 1) - 1);
+        if (act === "qty") {
+          const v = Number(e.target.value || 1);
+          it.qty = isFinite(v) && v > 0 ? Math.floor(v) : 1;
+        }
+        if (act === "rm") CartState.remove(id);
+        CartState.save();
+      });
     });
-    const totals = this.totals();
-    window.paypal.Buttons({
-      style:{ layout:'horizontal' },
-      createOrder: (data, actions)=> actions.order.create({ purchase_units:[{ amount:{ value: totals.total.toFixed(2) } }] }),
-      onApprove: async (data, actions)=>{
-        const detail = await actions.order.capture();
-        // Decrement inventory for items with trackInventory=true
-        try{
-          const key = 'content/live.json';
-          const content = await fetch('/.netlify/functions/get-content?key='+encodeURIComponent(key)).then(r=>r.json());
-          for(const ci of Cart.items){
-            for(const section of content.sections || []){
-              for(const it of section.items || []){
-                if(it.title === ci.title && it.trackInventory){
-                  const cur = Math.max(0, Number(it.stock||1) - ci.qty);
-                  it.stock = cur;
-                }
-              }
-            }
-          }
-          await fetch('/.netlify/functions/publish', {
-            method:'POST', headers:{'content-type':'application/json'},
-            body: JSON.stringify({ key, data: content })
-          });
-        }catch(e){ console.warn('Inventory update failed:', e); }
-        Cart.clear();
-        Cart.close();
-        alert('Payment complete. Thanks!');
-      },
-      onError: (err)=> alert('PayPal error: '+(err?.message||err))
-    }).render(this.el.paypal);
+
+    // footer actions
+    $("#clearCart")?.addEventListener("click", () => Cart.clear());
+    $("#checkoutBtn")?.addEventListener("click", () => {
+      if (!CartState.list.length) return;
+      window.location.href = buildPayPalUrl(CartState.list);
+    });
   }
 };
 
-window.Cart = Cart; // expose for onclick
-$('#openCart')?.addEventListener('click', ()=>Cart.open());
-$('#closeCart')?.addEventListener('click', ()=>Cart.close());
-Cart.load();
+// First render on load
+document.addEventListener("DOMContentLoaded", () => Cart.render());
+
+// Optional external triggers (if your HTML already has these IDs)
+$("#openCart")?.addEventListener("click", () => $("#cartDrawer")?.classList.add("open"));
+$("#closeCart")?.addEventListener("click", () => $("#cartDrawer")?.classList.remove("open"));
