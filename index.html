@@ -332,34 +332,92 @@
       gap: 1.5rem;
     }
 
+    /* Product Cards with Flip Animation */
     .product-card {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+      border: none;
       border-radius: 12px;
-      overflow: hidden;
-      transition: all 0.3s ease;
+      overflow: visible;
+      transition: transform 0.3s ease;
       cursor: pointer;
+      perspective: 1000px;
+      height: 400px;
     }
 
     .product-card:hover {
       transform: translateY(-5px);
+    }
+
+    .product-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .product-card:hover .product-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    /* Mobile: Touch to flip instead of hover */
+    @media (max-width: 768px) {
+      .product-card:hover .product-card-inner {
+        transform: none;
+      }
+      
+      .product-card.flipped .product-card-inner {
+        transform: rotateY(180deg);
+      }
+    }
+
+    .product-card-front,
+    .product-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .product-card-back {
+      transform: rotateY(180deg);
       background: rgba(255, 255, 255, 0.15);
     }
 
     .product-image {
       width: 100%;
-      height: 200px;
+      height: 220px;
       object-fit: cover;
+      border-radius: 12px 12px 0 0;
     }
 
     .product-info {
       padding: 1.5rem;
+      height: calc(100% - 220px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product-back-info {
+      padding: 1.5rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
     }
 
     .product-title {
       font-weight: 700;
       color: var(--ink);
       margin-bottom: 0.5rem;
+      font-size: 1.1rem;
     }
 
     .product-price {
@@ -373,6 +431,14 @@
       color: var(--muted);
       font-size: 0.9rem;
       margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+
+    .product-back-description {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
     }
 
     .add-to-cart-btn {
@@ -384,6 +450,42 @@
       width: 100%;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .add-to-cart-btn:hover {
+      background: #ff1e5c;
+    }
+
+    .flip-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--accent2);
+      padding: 0.5rem;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      animation: pulse-flip 2s infinite;
+    }
+
+    @keyframes pulse-flip {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .back-image-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-size: 3rem;
+      color: white;
+      opacity: 0.8;
     }
 
     /* Admin Panel */
@@ -709,8 +811,13 @@
       </div>
 
       <div class="form-group">
-        <label for="productImage">Image URL</label>
-        <input type="url" id="productImage" class="form-input" placeholder="https://..." required>
+        <label for="productImageFront">Front Image URL</label>
+        <input type="url" id="productImageFront" class="form-input" placeholder="https://..." required>
+      </div>
+
+      <div class="form-group">
+        <label for="productImageBack">Back Image URL</label>
+        <input type="url" id="productImageBack" class="form-input" placeholder="https://... (optional)">
       </div>
 
       <div class="form-group">
@@ -810,4 +917,571 @@
           image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
           description: "Post-punk classic with the iconic pulsar wave cover. Haunting and essential.",
           type: 'vinyl',
- 
+          character: 'zombie'
+        },
+        {
+          id: 5,
+          title: "Bauhaus - In The Flat Field",
+          price: 28.99,
+          image: "https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=400",
+          description: "Gothic rock pioneers' debut album. Dark, intense, and influential.",
+          type: 'vinyl',
+          character: 'zombie'
+        },
+        
+        // Chibi Kitty's Funko Section
+        {
+          id: 6,
+          title: "Funko Pop! Music - Freddie Mercury",
+          price: 19.99,
+          image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400",
+          description: "Queen's legendary frontman in his iconic yellow jacket. Limited edition!",
+          type: 'funko',
+          character: 'chibi'
+        },
+        {
+          id: 7,
+          title: "Funko Pop! Horror - Pennywise",
+          price: 24.99,
+          image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
+          description: "The dancing clown from IT, with detailed costume and red balloon.",
+          type: 'funko',
+          character: 'chibi'
+        },
+        {
+          id: 8,
+          title: "Funko Pop! Music - Billie Eilish",
+          price: 22.99,
+          image: "https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=400",
+          description: "Pop superstar in her signature green and black outfit. Super cute!",
+          type: 'funko',
+          character: 'chibi'
+        },
+        {
+          id: 9,
+          title: "Funko Pop! Movies - Edward Scissorhands",
+          price: 21.99,
+          image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400",
+          description: "Tim Burton's iconic character with detailed scissor hands and wild hair.",
+          type: 'funko',
+          character: 'chibi'
+        },
+        {
+          id: 10,
+          title: "Funko Pop! Animation - Sailor Moon",
+          price: 23.99,
+          image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
+          description: "Magical girl heroine with moon scepter and detailed costume.",
+          type: 'funko',
+          character: 'chibi'
+        },
+        
+        // KornDog's Featured Section
+        {
+          id: 11,
+          title: "Led Zeppelin IV",
+          price: 34.99,
+          image: "https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=400",
+          description: "Classic rock masterpiece featuring Stairway to Heaven. 180g audiophile pressing.",
+          type: 'vinyl',
+          character: 'korndog'
+        },
+        {
+          id: 12,
+          title: "Miles Davis - Kind of Blue",
+          price: 32.99,
+          image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400",
+          description: "The best-selling jazz album of all time. Essential for any collection.",
+          type: 'vinyl',
+          character: 'korndog'
+        },
+        {
+          id: 13,
+          title: "Funko Pop! Rocks - KISS Complete Set",
+          price: 89.99,
+          image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
+          description: "All four members of KISS in full makeup and costumes. Collector's item!",
+          type: 'funko',
+          character: 'korndog'
+        },
+        
+        // CD Section
+        {
+          id: 14,
+          title: "The Cure - Seventeen Seconds (Remastered CD)",
+          price: 15.99,
+          image: "https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=400",
+          description: "Remastered edition of the influential gothic rock album with bonus tracks.",
+          type: 'cd',
+          character: 'zombie'
+        },
+        {
+          id: 15,
+          title: "Depeche Mode - Violator (Deluxe CD)",
+          price: 18.99,
+          image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
+          description: "Synth-pop masterpiece with rare B-sides and live recordings.",
+          type: 'cd',
+          character: 'zombie'
+        },
+        
+        // Movie Section  
+        {
+          id: 16,
+          title: "The Nightmare Before Christmas (4K)",
+          price: 24.99,
+          image: "https://images.unsplash.com/photo-1489599328132-64e8ae66db82?w=400",
+          description: "Tim Burton's stop-motion classic in stunning 4K Ultra HD with behind-the-scenes content.",
+          type: 'movie',
+          character: 'zombie'
+        },
+        {
+          id: 17,
+          title: "Edward Scissorhands (Blu-ray)",
+          price: 19.99,
+          image: "https://images.unsplash.com/photo-1489599328132-64e8ae66db82?w=400",
+          description: "Gothic fairy tale starring Johnny Depp. Director's commentary and deleted scenes included.",
+          type: 'movie',
+          character: 'zombie'
+        },
+        
+        // Collectibles
+        {
+          id: 18,
+          title: "Limited Edition Zombie Kitty Figure",
+          price: 49.99,
+          image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400",
+          description: "Exclusive KornDog Records mascot figure. Only 500 made worldwide!",
+          type: 'collectible',
+          character: 'zombie'
+        },
+        {
+          id: 19,
+          title: "Glow-in-the-Dark Album Art Pins",
+          price: 12.99,
+          image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
+          description: "Set of 5 enamel pins featuring iconic album covers that glow in the dark.",
+          type: 'collectible',
+          character: 'zombie'
+        }
+      ];
+      saveProducts();
+    }
+
+    // SECURE ADMIN SYSTEM
+    let adminClickCount = 0;
+    let lastClickTime = 0;
+    const ADMIN_PASSWORD = "KornDog2025!"; // CHANGE THIS PASSWORD
+    const CLICK_TIMEOUT = 4000; // 4 seconds
+
+    function setupAdminAccess() {
+      const adminAccess = document.getElementById('adminAccess');
+      if (adminAccess) {
+        adminAccess.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const currentTime = Date.now();
+          
+          // Reset if too much time passed
+          if (currentTime - lastClickTime > CLICK_TIMEOUT) {
+            adminClickCount = 0;
+          }
+          
+          adminClickCount++;
+          lastClickTime = currentTime;
+          
+          if (adminClickCount >= 5) {
+            promptAdminLogin();
+            adminClickCount = 0;
+          } else if (adminClickCount >= 3) {
+            showNotification(`${5 - adminClickCount} more clicks for admin access...`);
+          }
+        });
+      }
+    }
+
+    function promptAdminLogin() {
+      if (checkAdminLockout()) {
+        showNotification('Admin access temporarily locked due to failed attempts');
+        return;
+      }
+      
+      const password = prompt("KornDog Records Admin Access\n\nEnter password:");
+      if (password === ADMIN_PASSWORD) {
+        const adminBtn = document.getElementById('adminBtn');
+        if (adminBtn) {
+          adminBtn.classList.add('show');
+          showNotification('Admin access granted!');
+          safeSetItem('kdr_failed_attempts', 0); // Clear failed attempts
+        }
+      } else if (password !== null) {
+        let attempts = safeGetItem('kdr_failed_attempts', 0) + 1;
+        safeSetItem('kdr_failed_attempts', attempts);
+        
+        if (attempts >= 3) {
+          safeSetItem('kdr_admin_lockout', Date.now());
+          showNotification('Admin locked for 10 minutes due to failed attempts');
+        } else {
+          showNotification(`Incorrect password. ${3 - attempts} attempts remaining`);
+        }
+      }
+    }
+
+    function checkAdminLockout() {
+      const lockoutTime = safeGetItem('kdr_admin_lockout', 0);
+      if (lockoutTime) {
+        const timeDiff = Date.now() - lockoutTime;
+        if (timeDiff < 600000) { // 10 minutes
+          return true;
+        } else {
+          safeSetItem('kdr_admin_lockout', 0);
+          safeSetItem('kdr_failed_attempts', 0);
+        }
+      }
+      return false;
+    }
+
+    // Navigation Functions
+    function goHome() {
+      showSection('home');
+    }
+
+    function showSection(sectionName) {
+      document.querySelectorAll('.content-area').forEach(section => {
+        section.classList.remove('active');
+      });
+      
+      const targetSection = sectionName === 'home' ? 'homeSection' : sectionName;
+      const section = document.getElementById(targetSection);
+      if (section) {
+        section.classList.add('active');
+        state.currentSection = sectionName;
+        
+        if (sectionName === 'store2d') {
+          renderProducts();
+        }
+      }
+    }
+
+    function showStore() {
+      showSection('store2d');
+    }
+
+    function showStoreCategory(category) {
+      showSection('store2d');
+      setTimeout(() => {
+        filterProducts(category);
+      }, 100);
+    }
+
+    function show3DInfo() {
+      if (window.innerWidth <= 768) {
+        showNotification('3D experience is available on desktop only. Enjoy browsing our collection!');
+        showStore();
+      } else {
+        showNotification('3D experience coming soon! Browse our collection in 2D for now.');
+        showStore();
+      }
+    }
+
+    // Product Management
+    function renderProducts() {
+      const grid = document.getElementById('productsGrid');
+      if (!grid) return;
+      
+      const filteredProducts = state.currentFilter === 'all' 
+        ? state.products 
+        : state.products.filter(p => p.type === state.currentFilter);
+
+      if (filteredProducts.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--muted);">
+            <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent2);"></i>
+            <p>No ${state.currentFilter === 'all' ? '' : state.currentFilter} products available yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filteredProducts.map(product => `
+        <div class="product-card">
+          <img src="${product.image}" alt="${product.title}" class="product-image" loading="lazy">
+          <div class="product-info">
+            <div class="product-title">${product.title}</div>
+            <div class="product-price">$${product.price}</div>
+            <div class="product-description">${product.description.substring(0, 100)}${product.description.length > 100 ? '...' : ''}</div>
+            <button class="add-to-cart-btn" onclick="addToCart(${product.id})">
+              <i class="fas fa-cart-plus"></i>
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterProducts(type, buttonElement) {
+      state.currentFilter = type;
+      
+      // Update active tab
+      if (buttonElement) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        buttonElement.classList.add('active');
+      }
+      
+      renderProducts();
+      
+      const count = type === 'all' ? state.products.length : state.products.filter(p => p.type === type).length;
+      showNotification(`Showing ${count} ${type === 'all' ? 'items' : type} products`);
+    }
+
+    // Admin Functions
+    function toggleAdmin() {
+      if (checkAdminLockout()) {
+        showNotification('Admin access temporarily locked');
+        return;
+      }
+
+      const adminPanel = document.getElementById('adminPanel');
+      if (!adminPanel) return;
+      
+      state.isAdmin = !state.isAdmin;
+      
+      if (state.isAdmin) {
+        adminPanel.classList.add('show');
+        renderInventory();
+      } else {
+        adminPanel.classList.remove('show');
+      }
+    }
+
+    function addProduct(productData) {
+      const newProduct = {
+        id: Date.now(),
+        title: productData.title,
+        price: productData.price,
+        image: productData.image,
+        description: productData.description,
+        type: productData.type
+      };
+      
+      state.products.push(newProduct);
+      saveProducts();
+      renderInventory();
+      
+      if (state.currentSection === 'store2d') {
+        renderProducts();
+      }
+      
+      showNotification(`Added ${productData.title} to inventory!`);
+    }
+
+    function deleteProduct(productId) {
+      const product = state.products.find(p => p.id === productId);
+      if (product && confirm(`Delete "${product.title}"?`)) {
+        state.products = state.products.filter(p => p.id !== productId);
+        saveProducts();
+        renderInventory();
+        
+        if (state.currentSection === 'store2d') {
+          renderProducts();
+        }
+        
+        showNotification('Product removed from inventory');
+      }
+    }
+
+    function editProduct(productId) {
+      const product = state.products.find(p => p.id === productId);
+      if (product) {
+        document.getElementById('productTitle').value = product.title;
+        document.getElementById('productPrice').value = product.price;
+        document.getElementById('productImage').value = product.image;
+        document.getElementById('productDescription').value = product.description;
+        document.getElementById('productType').value = product.type;
+        
+        showNotification('Product loaded for editing. Modify and click Add Product.');
+        
+        // Remove the original after user confirms
+        setTimeout(() => {
+          if (confirm('Remove original after editing?')) {
+            deleteProduct(productId);
+          }
+        }, 1000);
+      }
+    }
+
+    function saveProducts() {
+      safeSetItem('kdr_products', state.products);
+    }
+
+    function renderInventory() {
+      const inventoryList = document.getElementById('inventoryList');
+      if (!inventoryList) return;
+      
+      const byType = {};
+      state.products.forEach(product => {
+        if (!byType[product.type]) byType[product.type] = [];
+        byType[product.type].push(product);
+      });
+
+      let html = `<h3 style="color: var(--accent2); margin-bottom: 1rem;">Inventory (${state.products.length} total)</h3>`;
+      
+      Object.keys(byType).forEach(type => {
+        html += `<h4 style="color: var(--accent1); margin: 1rem 0 0.5rem 0; text-transform: capitalize;">${type}s (${byType[type].length})</h4>`;
+        byType[type].forEach(product => {
+          html += `
+            <div class="inventory-item">
+              <div class="inventory-item-title">${product.title}</div>
+              <div class="inventory-item-price">$${product.price}</div>
+              <button class="btn-small btn-edit" onclick="editProduct(${product.id})">Edit</button>
+              <button class="btn-small btn-delete" onclick="deleteProduct(${product.id})">Delete</button>
+            </div>
+          `;
+        });
+      });
+      
+      inventoryList.innerHTML = html;
+    }
+
+    // Cart Functions
+    function updateCartUI() {
+      const cartCount = document.getElementById('cartCount');
+      if (cartCount) {
+        const totalItems = state.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        cartCount.textContent = totalItems;
+      }
+    }
+
+    function addToCart(productId) {
+      const product = state.products.find(p => p.id === productId);
+      if (!product) return;
+      
+      const existingItem = state.cart.find(item => item.id === productId);
+      
+      if (existingItem) {
+        existingItem.quantity = (existingItem.quantity || 1) + 1;
+      } else {
+        state.cart.push({ ...product, quantity: 1 });
+      }
+      
+      safeSetItem('kdr_cart', state.cart);
+      updateCartUI();
+      showNotification(`Added ${product.title} to cart!`);
+    }
+
+    function showCart() {
+      const itemCount = state.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+      if (itemCount === 0) {
+        showNotification('Your cart is empty. Start shopping!');
+      } else {
+        const total = state.cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+        showNotification(`${itemCount} items in cart • Total: $${total.toFixed(2)}`);
+      }
+    }
+
+    // Notification System
+    function showNotification(message) {
+      // Remove existing notifications
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notification => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      });
+
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.innerHTML = `
+        <div class="notification-content">
+          <span>${message}</span>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Show notification
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+      
+      // Hide notification
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 4000);
+    }
+
+    // Loading System
+    function hideLoadingScreen() {
+      const loadingScreen = document.getElementById('loadingScreen');
+      const progressBar = document.getElementById('loadingProgress');
+      
+      if (!loadingScreen || !progressBar) return;
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 20 + 5;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+          }, 500);
+        }
+        progressBar.style.width = progress + '%';
+      }, 200);
+    }
+
+    // Initialize Everything
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('KornDog Records initializing...');
+      
+      // Start loading sequence
+      hideLoadingScreen();
+      
+      // Setup admin access
+      setupAdminAccess();
+      
+      // Initialize UI
+      updateCartUI();
+      
+      // Loading failsafe
+      setTimeout(function() {
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+          loadingScreen.classList.add('hidden');
+          console.log('Loading screen hidden by failsafe');
+        }
+      }, 8000);
+
+      // Product form handler
+      const productForm = document.getElementById('productForm');
+      if (productForm) {
+        productForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const title = document.getElementById('productTitle').value.trim();
+          const price = parseFloat(document.getElementById('productPrice').value);
+          const image = document.getElementById('productImage').value.trim();
+          const description = document.getElementById('productDescription').value.trim();
+          const type = document.getElementById('productType').value;
+          
+          if (title && price > 0 && image && description) {
+            addProduct({ title, price, image, description, type });
+            productForm.reset();
+          } else {
+            showNotification('Please fill in all fields correctly');
+          }
+        });
+      }
+      
+      console.log('KornDog Records initialized successfully!');
+    });
+  </script>
+</body>
+</html>
