@@ -1,12 +1,86 @@
-
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.8; }
-      100% { transform: scale(1.05); opacity: 1; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>KornDog Records • Premium Media & Collectibles</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg1: #3b2aa2;
+      --bg2: #0fa77f;
+      --accent1: #ff3e6c;
+      --accent2: #ffd166;
+      --ink: #eaf4ff;
+      --muted: #b6c2d1;
     }
 
-    /* Clean Navigation */
-    .nav-simple {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* Loading Screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-logo {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 2.5rem;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+    }
+
+    .loading-text {
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .loading-bar {
+      width: 300px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .loading-progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Navigation */
+    .nav {
       background: rgba(11, 18, 32, 0.9);
       backdrop-filter: blur(8px);
       padding: 1rem 2rem;
@@ -27,27 +101,33 @@
       font-size: 1.2rem;
       color: var(--accent2);
       cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-
-    .nav-brand:hover {
-      transform: scale(1.05);
+      user-select: none;
     }
 
     .nav-brand img {
       height: 32px;
       width: auto;
-      transition: transform 0.2s ease;
     }
 
-    .nav-brand:hover img {
-      transform: rotate(5deg);
-    }
-
-    .nav-controls-simple {
+    .nav-controls {
       display: flex;
       gap: 1rem;
       align-items: center;
+    }
+
+    .admin-btn {
+      background: rgba(255, 209, 102, 0.2);
+      border: 1px solid var(--accent2);
+      color: var(--accent2);
+      padding: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .admin-btn.show {
+      opacity: 1;
     }
 
     .btn-cart {
@@ -60,13 +140,7 @@
       align-items: center;
       gap: 0.5rem;
       cursor: pointer;
-      transition: all 0.2s ease;
       font-weight: 600;
-    }
-
-    .btn-cart:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
     }
 
     .cart-count {
@@ -75,28 +149,33 @@
       padding: 2px 8px;
       border-radius: 12px;
       font-size: 0.8rem;
-      font-weight: 600;
+    }
+
+    /* Content Areas */
+    .content-area {
+      min-height: calc(100vh - 70px);
+      display: none;
+    }
+
+    .content-area.active {
+      display: block;
     }
 
     /* Hero Section */
-    .hero-clean {
+    .hero-section {
       min-height: 85vh;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       padding: 2rem;
-      position: relative;
-      overflow: hidden;
     }
 
-    .hero-content-clean {
+    .hero-content {
       max-width: 600px;
-      position: relative;
-      z-index: 2;
     }
 
-    .hero-logo-clean {
+    .hero-logo {
       width: 180px;
       height: 180px;
       margin: 0 auto 2rem;
@@ -107,49 +186,38 @@
       justify-content: center;
       backdrop-filter: blur(8px);
       border: 2px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      transition: transform 0.3s ease;
       cursor: pointer;
     }
 
-    .hero-logo-clean:hover {
-      transform: scale(1.05) rotate(2deg);
-    }
-
-    .hero-logo-clean img {
+    .hero-logo img {
       width: 140px;
       height: auto;
     }
 
-    .hero-title-clean {
+    .hero-title {
       font-size: 3.5rem;
       font-weight: 900;
       color: var(--ink);
       margin-bottom: 1rem;
       font-family: 'Permanent Marker', cursive;
-      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 
-    .hero-subtitle-clean {
-      font-size: 1.3rem;
+    .hero-subtitle {
+      font-size: 1.2rem;
       color: var(--muted);
       margin-bottom: 3rem;
-      font-weight: 400;
       line-height: 1.6;
     }
 
-    .hero-actions-clean {
+    .hero-actions {
       display: flex;
       gap: 1.5rem;
       justify-content: center;
-      margin-bottom: 4rem;
+      margin-bottom: 3rem;
       flex-wrap: wrap;
     }
 
-    .btn-primary-large {
-      background: var(--accent1);
-      color: white;
-      border: none;
+    .btn-large {
       padding: 1.25rem 2.5rem;
       border-radius: 12px;
       font-size: 1.1rem;
@@ -159,59 +227,26 @@
       gap: 0.75rem;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 16px rgba(255, 62, 108, 0.3);
-      position: relative;
-      overflow: hidden;
+      border: none;
     }
 
-    .btn-primary-large:hover {
-      background: #ff1e5c;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(255, 62, 108, 0.4);
+    .btn-primary {
+      background: var(--accent1);
+      color: white;
     }
 
-    .btn-primary-large::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn-primary-large:hover::before {
-      left: 100%;
-    }
-
-    .btn-secondary-large {
+    .btn-secondary {
       background: rgba(255, 255, 255, 0.1);
       color: var(--ink);
       border: 2px solid rgba(255, 255, 255, 0.3);
-      padding: 1.25rem 2.5rem;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
     }
 
-    .btn-secondary-large:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    }
-
-    .features-clean {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      flex-wrap: wrap;
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1.5rem;
+      max-width: 500px;
+      margin: 0 auto;
     }
 
     .feature-item {
@@ -221,129 +256,254 @@
       gap: 0.75rem;
       color: var(--muted);
       font-weight: 600;
-      transition: all 0.3s ease;
       cursor: pointer;
+      padding: 1rem;
+      border-radius: 12px;
+      transition: all 0.3s ease;
     }
 
     .feature-item:hover {
+      background: rgba(255, 255, 255, 0.1);
       color: var(--ink);
-      transform: translateY(-5px);
     }
 
     .feature-item i {
       font-size: 2rem;
       color: var(--accent2);
+    }
+
+    /* 2D Store */
+    .store-2d {
+      padding: 2rem;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--ink);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .store-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .store-header h2 {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 2.5rem;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--ink);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .tab-btn.active {
+      background: var(--accent1);
+      color: white;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
-    .feature-item:hover i {
-      color: var(--accent1);
-      transform: scale(1.2);
+    .product-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.15);
     }
 
-    /* Background decorations */
-    .hero-clean::before {
-      content: '';
-      position: absolute;
-      top: 10%;
-      left: -10%;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 209, 102, 0.3), transparent 70%);
-      animation: float 6s ease-in-out infinite;
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
     }
 
-    .hero-clean::after {
-      content: '';
-      position: absolute;
-      bottom: 10%;
-      right: -10%;
+    .product-info {
+      padding: 1.5rem;
+    }
+
+    .product-title {
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+      font-size: 1.3rem;
+      color: var(--accent2);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .product-description {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .add-to-cart-btn {
+      background: var(--accent1);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 8px;
+      width: 100%;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Admin Panel */
+    .admin-panel {
+      position: fixed;
+      top: 0;
+      right: -400px;
       width: 400px;
-      height: 400px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 62, 108, 0.2), transparent 70%);
-      animation: float 8s ease-in-out infinite reverse;
+      height: 100vh;
+      background: rgba(11, 18, 32, 0.95);
+      backdrop-filter: blur(12px);
+      z-index: 200;
+      transition: right 0.4s ease;
+      overflow-y: auto;
+      padding: 2rem;
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
+    .admin-panel.show {
+      right: 0;
     }
 
-    /* Hidden Advanced Interface */
-    .advanced-interface {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 500;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 1rem;
     }
 
-    .advanced-interface.active {
+    .admin-title {
+      color: var(--accent2);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .close-admin {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
       display: block;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
     }
 
-    /* 3D Canvas */
-    #canvas3D {
-      position: fixed;
-      top: 0;
-      left: 0;
+    .form-input {
       width: 100%;
-      height: 100%;
-      z-index: 1;
-      display: none;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--ink);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
     }
 
-    #canvas3D.active {
-      display: block;
+    .form-textarea {
+      min-height: 80px;
+      resize: vertical;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .nav-simple {
-        padding: 0.75rem 1rem;
-      }
+    .btn-admin {
+      background: var(--accent1);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
 
-      .nav-brand {
-        font-size: 1rem;
-      }
+    .inventory-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
 
-      .hero-title-clean {
-        font-size: 2.5rem;
-      }
-      
-      .hero-subtitle-clean {
-        font-size: 1.1rem;
-      }
+    .inventory-item-title {
+      color: var(--ink);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
 
-      .hero-logo-clean {
-        width: 140px;
-        height: 140px;
-      }
+    .inventory-item-price {
+      color: var(--accent2);
+      font-weight: 700;
+    }
 
-      .hero-logo-clean img {
-        width: 100px;
-      }
-      
-      .hero-actions-clean {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .btn-primary-large,
-      .btn-secondary-large {
-        width: 100%;
-        max-width: 280px;
-        justify-content: center;
-      }
-      
-      .features-clean {
-        gap: 2rem;
-      }
+    .btn-small {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-edit {
+      background: var(--accent2);
+      color: #000;
+    }
+
+    .btn-delete {
+      background: #ef4444;
+      color: white;
     }
 
     /* Notification */
@@ -365,15 +525,48 @@
       color: #000;
       padding: 1rem 1.5rem;
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
       font-weight: 600;
     }
 
-    .notification-content i {
-      font-size: 1.2rem;
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn-large {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .admin-panel {
+        width: 100%;
+        right: -100%;
+      }
+
+      .category-tabs {
+        gap: 0.5rem;
+      }
+
+      .tab-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+      }
     }
   </style>
 </head>
@@ -382,19 +575,22 @@
   <!-- Loading Screen -->
   <div class="loading-screen" id="loadingScreen">
     <div class="loading-logo">KornDog Records</div>
-    <div class="loading-text">Loading your vinyl experience...</div>
+    <div class="loading-text">Loading your media experience...</div>
     <div class="loading-bar">
       <div class="loading-progress" id="loadingProgress"></div>
     </div>
   </div>
 
-  <!-- Clean Navigation -->
-  <nav class="nav-simple">
-    <div class="nav-brand" onclick="location.reload()">
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-brand" onclick="goHome()">
       <img src="ChatGPT Image Aug 10, 2025, 12_07_42 AM.png" alt="KornDog Records">
       KornDog Records
     </div>
-    <div class="nav-controls-simple">
+    <div class="nav-controls">
+      <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()">
+        <i class="fas fa-cog"></i>
+      </button>
       <button class="btn-cart" id="cartBtn" onclick="showCart()">
         <i class="fas fa-shopping-cart"></i>
         Cart
@@ -403,224 +599,215 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="hero-clean">
-    <div class="hero-content-clean">
-      <div class="hero-logo-clean">
-        <img src="ChatGPT Image Aug 10, 2025, 12_07_42 AM.png" alt="KornDog Records">
-      </div>
-      <h1 class="hero-title-clean">Premium Vinyl & Collectibles</h1>
-      <p class="hero-subtitle-clean">Discover rare records, limited edition Funkos, and unique collectibles from the comfort of your screen or in immersive 3D</p>
-      
-      <!-- Simple Call to Action -->
-      <div class="hero-actions-clean">
-        <button class="btn-primary-large" onclick="showStore()">
-          <i class="fas fa-record-vinyl"></i>
-          Shop Collection
-        </button>
-        <button class="btn-secondary-large" onclick="enter3DStore()">
-          <i class="fas fa-cube"></i>
-          Experience 3D Store
-        </button>
-      </div>
+  <!-- HOME SECTION -->
+  <section class="content-area active" id="homeSection">
+    <div class="hero-section">
+      <div class="hero-content">
+        <div class="hero-logo" id="adminAccess">
+          <img src="ChatGPT Image Aug 10, 2025, 12_07_42 AM.png" alt="KornDog Records">
+        </div>
+        <h1 class="hero-title">Premium Media & Collectibles</h1>
+        <p class="hero-subtitle">Discover rare vinyl records, classic CDs, exclusive movies, limited edition Funkos, and unique collectibles</p>
+        
+        <div class="hero-actions">
+          <button class="btn-large btn-primary" onclick="showStore()">
+            <i class="fas fa-store"></i>
+            Browse Collection
+          </button>
+          <button class="btn-large btn-secondary" onclick="show3DInfo()">
+            <i class="fas fa-cube"></i>
+            3D Experience
+          </button>
+        </div>
 
-      <!-- Feature Highlights -->
-      <div class="features-clean">
-        <div class="feature-item" onclick="showVinyl()">
-          <i class="fas fa-record-vinyl"></i>
-          <span>Rare Vinyl</span>
-        </div>
-        <div class="feature-item" onclick="showFunkos()">
-          <i class="fas fa-robot"></i>
-          <span>Limited Funkos</span>
-        </div>
-        <div class="feature-item" onclick="enter3DStore()">
-          <i class="fas fa-cube"></i>
-          <span>3D Experience</span>
+        <div class="features-grid">
+          <div class="feature-item" onclick="showStoreCategory('vinyl')">
+            <i class="fas fa-record-vinyl"></i>
+            <span>Vinyl</span>
+          </div>
+          <div class="feature-item" onclick="showStoreCategory('cd')">
+            <i class="fas fa-compact-disc"></i>
+            <span>CDs</span>
+          </div>
+          <div class="feature-item" onclick="showStoreCategory('funko')">
+            <i class="fas fa-robot"></i>
+            <span>Funkos</span>
+          </div>
+          <div class="feature-item" onclick="showStoreCategory('movie')">
+            <i class="fas fa-film"></i>
+            <span>Movies</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Hidden Advanced Interface -->
-  <div class="advanced-interface" id="advancedInterface">
-    <!-- This is where your complex 3D interface would go when activated -->
-    <div style="padding: 2rem; text-align: center; color: white;">
-      <h2>3D Store Loading...</h2>
-      <p>Advanced 3D interface will be implemented here</p>
-      <button class="btn-secondary-large" onclick="exit3DStore()" style="margin-top: 2rem;">
+  <!-- 2D STORE SECTION -->
+  <section class="content-area" id="store2d">
+    <div class="store-2d">
+      <button class="back-btn" onclick="goHome()">
         <i class="fas fa-arrow-left"></i>
-        Back to Store
+        Back to Home
       </button>
+      
+      <div class="store-header">
+        <h2>Our Collection</h2>
+        <p style="color: var(--muted);">Browse by category</p>
+      </div>
+
+      <div class="category-tabs">
+        <button class="tab-btn active" onclick="filterProducts('all', this)">
+          <i class="fas fa-th"></i>
+          All
+        </button>
+        <button class="tab-btn" onclick="filterProducts('vinyl', this)">
+          <i class="fas fa-record-vinyl"></i>
+          Vinyl
+        </button>
+        <button class="tab-btn" onclick="filterProducts('cd', this)">
+          <i class="fas fa-compact-disc"></i>
+          CDs
+        </button>
+        <button class="tab-btn" onclick="filterProducts('funko', this)">
+          <i class="fas fa-robot"></i>
+          Funkos
+        </button>
+        <button class="tab-btn" onclick="filterProducts('movie', this)">
+          <i class="fas fa-film"></i>
+          Movies
+        </button>
+        <button class="tab-btn" onclick="filterProducts('collectible', this)">
+          <i class="fas fa-gem"></i>
+          Collectibles
+        </button>
+      </div>
+
+      <div class="products-grid" id="productsGrid">
+        <!-- Products load here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN PANEL -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-header">
+      <div class="admin-title">Store Admin</div>
+      <button class="close-admin" onclick="toggleAdmin()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form id="productForm">
+      <div class="form-group">
+        <label for="productTitle">Product Title</label>
+        <input type="text" id="productTitle" class="form-input" placeholder="Enter product name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="productPrice">Price ($)</label>
+        <input type="number" id="productPrice" class="form-input" placeholder="0.00" step="0.01" required>
+      </div>
+
+      <div class="form-group">
+        <label for="productImage">Image URL</label>
+        <input type="url" id="productImage" class="form-input" placeholder="https://..." required>
+      </div>
+
+      <div class="form-group">
+        <label for="productDescription">Description</label>
+        <textarea id="productDescription" class="form-input form-textarea" placeholder="Product description..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="productType">Type</label>
+        <select id="productType" class="form-input">
+          <option value="vinyl">Vinyl Record</option>
+          <option value="cd">CD</option>
+          <option value="funko">Funko Pop</option>
+          <option value="movie">Movie</option>
+          <option value="collectible">Collectible</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-admin">Add Product</button>
+    </form>
+
+    <div class="inventory-list" id="inventoryList">
+      <!-- Admin inventory goes here -->
     </div>
   </div>
 
-  <!-- 3D Canvas (Hidden by default) -->
-  <canvas id="canvas3D"></canvas>
-
   <script>
-    // Global state
+    // Safe localStorage wrapper
+    function safeGetItem(key, defaultValue = null) {
+      try {
+        if (typeof Storage !== "undefined" && localStorage) {
+          const item = localStorage.getItem(key);
+          return item ? JSON.parse(item) : defaultValue;
+        }
+      } catch (e) {
+        console.warn('localStorage not available:', e);
+      }
+      return defaultValue;
+    }
+
+    function safeSetItem(key, value) {
+      try {
+        if (typeof Storage !== "undefined" && localStorage) {
+          localStorage.setItem(key, JSON.stringify(value));
+          return true;
+        }
+      } catch (e) {
+        console.warn('localStorage not available:', e);
+      }
+      return false;
+    }
+
+    // Global state with safe localStorage
     const state = {
-      cart: JSON.parse(localStorage.getItem("kdr_cart") || "[]"),
-      is3D: false,
-      products: [
-        // Sample products for demo
+      cart: safeGetItem("kdr_cart", []),
+      products: safeGetItem("kdr_products", []),
+      currentSection: 'home',
+      currentFilter: 'all',
+      isAdmin: false
+    };
+
+    // Default products - YOUR ACTUAL INVENTORY
+    if (state.products.length === 0) {
+      state.products = [
+        // Zombie Kitty's Vinyl Section (Dark/Gothic)
         {
           id: 1,
           title: "Pink Floyd - Dark Side of the Moon",
           price: 29.99,
           image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
-          description: "Legendary progressive rock masterpiece on 180g vinyl.",
-          type: 'vinyl'
+          description: "Legendary progressive rock masterpiece on 180g vinyl. A must-have for any serious collector.",
+          type: 'vinyl',
+          character: 'zombie'
         },
         {
-          id: 6,
-          title: "Funko Pop! Music - Freddie Mercury",
-          price: 19.99,
+          id: 2,
+          title: "The Cure - Disintegration",
+          price: 32.99,
+          image: "https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=400",
+          description: "Gothic masterpiece. Dark, atmospheric, and utterly beautiful.",
+          type: 'vinyl',
+          character: 'zombie'
+        },
+        {
+          id: 3,
+          title: "My Chemical Romance - Black Parade",
+          price: 27.99,
           image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400",
-          description: "Queen's legendary frontman in his iconic yellow jacket.",
-          type: 'funko'
-        }
-      ]
-    };
-
-    // Simple loading simulation
-    function hideLoadingScreen() {
-      const loadingScreen = document.getElementById('loadingScreen');
-      const progressBar = document.getElementById('loadingProgress');
-      
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 15;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-          setTimeout(() => {
-            loadingScreen.classList.add('hidden');
-          }, 500);
-        }
-        progressBar.style.width = progress + '%';
-      }, 200);
-    }
-
-    // Force loading screen to hide after 8 seconds (failsafe)
-    document.addEventListener('DOMContentLoaded', function() {
-      hideLoadingScreen();
-      
-      setTimeout(function() {
-        const loadingScreen = document.getElementById('loadingScreen');
-        if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-          loadingScreen.classList.add('hidden');
-          console.log('Loading screen hidden by timeout failsafe');
-        }
-      }, 8000);
-      
-      // Initialize cart display
-      updateCartUI();
-    });
-
-    // Main navigation functions
-    function showStore() {
-      showNotification('Full store catalog coming soon! Check out our 3D experience.');
-    }
-
-    function showVinyl() {
-      showNotification('Vinyl collection coming soon!');
-    }
-
-    function showFunkos() {
-      showNotification('Funko collection coming soon!');
-    }
-
-    function showCart() {
-      if (state.cart.length === 0) {
-        showNotification('Your cart is empty. Start shopping!');
-      } else {
-        showNotification(`You have ${state.cart.length} items in your cart.`);
-      }
-    }
-
-    // 3D Store functions
-    function enter3DStore() {
-      const advancedInterface = document.getElementById('advancedInterface');
-      const heroSection = document.querySelector('.hero-clean');
-      
-      advancedInterface.classList.add('active');
-      heroSection.style.display = 'none';
-      state.is3D = true;
-      
-      showNotification('Welcome to the 3D experience!');
-      // Here you would initialize your full 3D store
-    }
-
-    function exit3DStore() {
-      const advancedInterface = document.getElementById('advancedInterface');
-      const heroSection = document.querySelector('.hero-clean');
-      
-      advancedInterface.classList.remove('active');
-      heroSection.style.display = 'flex';
-      state.is3D = false;
-      
-      showNotification('Back to main store view');
-    }
-
-    // Cart functions
-    function updateCartUI() {
-      const cartCount = document.getElementById('cartCount');
-      const totalItems = state.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-      cartCount.textContent = totalItems;
-    }
-
-    function addToCart(product) {
-      const existingItem = state.cart.find(item => item.id === product.id);
-      
-      if (existingItem) {
-        existingItem.quantity = (existingItem.quantity || 1) + 1;
-      } else {
-        state.cart.push({ ...product, quantity: 1 });
-      }
-      
-      localStorage.setItem('kdr_cart', JSON.stringify(state.cart));
-      updateCartUI();
-      showNotification(`Added ${product.title} to cart!`);
-    }
-
-    // Notification system
-    function showNotification(message) {
-      // Remove existing notifications
-      const existingNotifications = document.querySelectorAll('.notification');
-      existingNotifications.forEach(notification => {
-        notification.remove();
-      });
-
-      // Create new notification
-      const notification = document.createElement('div');
-      notification.className = 'notification';
-      notification.innerHTML = `
-        <div class="notification-content">
-          <i class="fas fa-info-circle"></i>
-          <span>${message}</span>
-        </div>
-      `;
-      
-      document.body.appendChild(notification);
-      
-      // Show notification
-      setTimeout(() => notification.classList.add('show'), 100);
-      
-      // Hide and remove notification
-      setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-          if (notification.parentNode) {
-            notification.parentNode.removeChild(notification);
-          }
-        }, 300);
-      }, 4000);
-    }
-
-    // Initialize
-    console.log('KornDog Records Version 2 initialized!');
-  </script>
-</body>
-</html>
+          description: "Emo rock opera with theatrical flair. Perfect for dramatic listening sessions.",
+          type: 'vinyl',
+          character: 'zombie'
+        },
+        {
+          id: 4,
+          title: "Joy Division - Unknown Pleasures",
+          price: 26.99,
+          image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
+          description: "Post-punk classic with the iconic pulsar wave cover. Haunting and essential.",
+          type: 'vinyl',
+ 
