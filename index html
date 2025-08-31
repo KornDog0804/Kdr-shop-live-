@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>KornDog Records • Premium Media & Collectibles</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+  
+  <!-- PayPal SDK with YOUR Client ID -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AcU9sSdlnQlq_dsilwLNL2Kw5YQczqtoEpuYmoADtbJ7be3JaMUXpignQu2RiUcnBEuH_e-edGgSnYv8&currency=USD"></script>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-logo">KornDog Records</div>
+    <div class="loading-text">Loading your media experience...</div>
+    <div class="loading-bar">
+      <div class="loading-progress" id="loadingProgress"></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-brand" onclick="goHome()">
+      <img src="assets/images/characters/korndog-logo.png" alt="KornDog Records">
+      KornDog Records
+    </div>
+    <div class="nav-controls">
+      <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()">
+        <i class="fas fa-cog"></i>
+      </button>
+      <button class="btn-cart" id="cartBtn" onclick="showCart()">
+        <i class="fas fa-shopping-cart"></i>
+        Cart
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HOME SECTION -->
+  <section class="content-area active" id="homeSection">
+    <div class="hero-section">
+      <div class="hero-content">
+        <div class="hero-logo" id="adminAccess">
+          <img src="assets/images/characters/korndog-logo.png" alt="KornDog Records">
+        </div>
+        <h1 class="hero-title">Premium Media & Collectibles</h1>
+        <p class="hero-subtitle">Discover rare vinyl records, classic CDs, exclusive movies, limited edition Funkos, and unique collectibles</p>
+        
+        <div class="hero-actions">
+          <button class="btn-large btn-primary" onclick="showStore()">
+            <i class="fas fa-store"></i>
+            Browse Collection
+          </button>
+          <button class="btn-large btn-secondary" onclick="show3DInfo()">
+            <i class="fas fa-cube"></i>
+            3D Experience
+          </button>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-item" onclick="showStoreCategory('vinyl')">
+            <i class="fas fa-record-vinyl"></i>
+            <span>Vinyl</span>
+          </div>
+          <div class="feature-item" onclick="showStoreCategory('cd')">
+            <i class="fas fa-compact-disc"></i>
+            <span>CDs</span>
+          </div>
+          <div class="feature-item" onclick="showStoreCategory('funko')">
+            <i class="fas fa-robot"></i>
+            <span>Funkos</span>
+          </div>
+          <div class="feature-item" onclick="showStoreCategory('movie')">
+            <i class="fas fa-film"></i>
+            <span>Movies</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2D STORE SECTION -->
+  <section class="content-area" id="store2d">
+    <div class="store-2d">
+      <button class="back-btn" onclick="goHome()">
+        <i class="fas fa-arrow-left"></i>
+        Back to Home
+      </button>
+      
+      <div class="store-header">
+        <h2>Our Collection</h2>
+        <p style="color: var(--muted);">Browse by category</p>
+      </div>
+
+      <div class="category-tabs">
+        <button class="tab-btn" onclick="filterProducts('all', this)">
+          <i class="fas fa-th"></i>
+          All
+        </button>
+        <button class="tab-btn" onclick="filterProducts('vinyl', this)">
+          <i class="fas fa-record-vinyl"></i>
+          Vinyl
+        </button>
+        <button class="tab-btn" onclick="filterProducts('cd', this)">
+          <i class="fas fa-compact-disc"></i>
+          CDs
+        </button>
+        <button class="tab-btn" onclick="filterProducts('funko', this)">
+          <i class="fas fa-robot"></i>
+          Funkos
+        </button>
+        <button class="tab-btn" onclick="filterProducts('movie', this)">
+          <i class="fas fa-film"></i>
+          Movies
+        </button>
+        <button class="tab-btn" onclick="filterProducts('collectible', this)">
+          <i class="fas fa-gem"></i>
+          Collectibles
+        </button>
+      </div>
+
+      <div class="products-grid" id="productsGrid">
+        <!-- Products load here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN PANEL -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-header">
+      <div class="admin-title">Store Admin</div>
+      <button class="close-admin" onclick="toggleAdmin()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form id="productForm">
+      <input type="hidden" id="productId">
+      <div class="form-group">
+        <label for="productTitle">Product Title</label>
+        <input type="text" id="productTitle" class="form-input" placeholder="Enter product name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="productPrice">Price ($)</label>
+        <input type="number" id="productPrice" class="form-input" placeholder="27.99" step="0.01" required>
+      </div>
+
+      <div class="form-group">
+        <label for="productImageFront">Front Image</label>
+        <div class="file-input-wrapper">
+          <div class="file-input-button">
+            <i class="fas fa-upload"></i> Choose from Phone Library
+          </div>
+          <input type="file" id="productImageFront" class="file-input" accept="image/*">
+        </div>
+        <img id="imagePreviewFront" class="image-preview" style="display: none;">
+      </div>
+
+      <div class="form-group">
+        <label for="productImageBack">Back Image (Optional)</label>
+        <div class="file-input-wrapper">
+          <div class="file-input-button">
+            <i class="fas fa-upload"></i> Choose from Phone Library
+          </div>
+          <input type="file" id="productImageBack" class="file-input" accept="image/*">
+        </div>
+        <img id="imagePreviewBack" class="image-preview" style="display: none;">
+      </div>
+
+      <div class="form-group">
+        <label for="productDescription">Description</label>
+        <textarea id="productDescription" class="form-input form-textarea" placeholder="Product description..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="productType">Type</label>
+        <select id="productType" class="form-input">
+          <option value="vinyl">Vinyl Record</option>
+          <option value="cd">CD</option>
+          <option value="funko">Funko Pop</option>
+          <option value="movie">Movie</option>
+          <option value="collectible">Collectible</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-admin">
+        <i class="fas fa-save"></i> Save Product
+      </button>
+    </form>
+
+    <div class="inventory-list" id="inventoryList">
+      <!-- Admin inventory goes here -->
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div class="modal-overlay" id="cartModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fas fa-shopping-cart"></i> Your Cart</h3>
+        <button onclick="closeModal('cartModal')" style="background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="cartItems">
+          <!-- Cart items will be loaded here -->
+        </div>
+        <div id="cartEmpty" style="text-align: center; padding: 2rem;">
+          <i class="fas fa-shopping-cart" style="font-size: 3rem; color: var(--muted); margin-bottom: 1rem;"></i>
+          <p>Your cart is empty</p>
+        </div>
+        <div id="cartSummary" style="margin-top: 1.5rem;">
+          <div class="cart-summary-row">
+            <span>Subtotal:</span>
+            <span id="cartSubtotal">$0.00</span>
+          </div>
+          <div class="cart-summary-row">
+            <span>Tax (8.5%):</span>
+            <span id="cartTax">$0.00</span>
+          </div>
+          <div class="cart-summary-row total">
+            <span>Total:</span>
+            <span id="cartTotal">$0.00</span>
+          </div>
+        </div>
+        <div id="paypal-button-container"></div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('cartModal')" class="btn-secondary" style="background: rgba(255,255,255,0.1); color: var(--ink); border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
+          Continue Shopping
+        </button>
+        <button onclick="clearCart()" class="btn-primary" style="background: #ef4444; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
+          Clear Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
